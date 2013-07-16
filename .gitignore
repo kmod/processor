@@ -1,0 +1,6 @@
+*
+!*.v
+!*.ucf
+!.gitignore
+!*envsettings.html
+!*.xise
