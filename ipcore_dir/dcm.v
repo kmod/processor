@@ -86,8 +86,8 @@ module dcm
   //    * Unused inputs are tied off
   //    * Unused outputs are labeled unused
   wire        psdone_unused;
-  wire        locked_int;
-  wire [7:0]  status_int;
+  //wire        locked_int;
+  //wire [7:0]  status_int;
   wire clkfb;
   wire clk0;
   wire clkfx;
@@ -123,8 +123,8 @@ module dcm
     .PSINCDEC              (1'b0),
     .PSDONE                (),
     // Other control and status signals
-    .LOCKED                (locked_int),
-    .STATUS                (status_int),
+    .LOCKED                (),
+    .STATUS                (),
     .RST                   (1'b0),
     // Unused pin- tie low
     .DSSEN                 (1'b0));
