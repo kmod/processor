@@ -4,9 +4,9 @@
 ## - rename the used signals according to the project
 
 ## Clock signal
-#NET "clk"            LOC = "V10" | IOSTANDARD = "LVCMOS33";   #Bank = 2, pin name = IO_L30N_GCLK0_USERCCLK,            Sch name = GCLK
-#Net "clk" TNM_NET = sys_clk_pin;
-#TIMESPEC TS_sys_clk_pin = PERIOD sys_clk_pin 100000 kHz;
+NET "clk"            LOC = "V10" | IOSTANDARD = "LVCMOS33";   #Bank = 2, pin name = IO_L30N_GCLK0_USERCCLK,            Sch name = GCLK
+Net "clk" TNM_NET = sys_clk_pin;
+TIMESPEC TS_sys_clk_pin = PERIOD sys_clk_pin 100000 kHz;
 
 ## onBoard USB controller
 ## NOTE: DEPP and DSTM net names use some of the same pins, if trying to use both DEPP and DSTM use a signle net name for each shared pin.
@@ -107,19 +107,19 @@
 
 
 ## 7 segment display
-#NET "seg<0>"         LOC = "T17" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L51P_M1DQ12,                    Sch name = CA
-#NET "seg<1>"         LOC = "T18" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L51N_M1DQ13,                    Sch name = CB
-#NET "seg<2>"         LOC = "U17" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L52P_M1DQ14,                    Sch name = CC
-#NET "seg<3>"         LOC = "U18" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L52N_M1DQ15,                    Sch name = CD
-#NET "seg<4>"         LOC = "M14" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L53P,                           Sch name = CE
-#NET "seg<5>"         LOC = "N14" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L53N_VREF,                      Sch name = CF
-#NET "seg<6>"         LOC = "L14" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L61P,                           Sch name = CG
-#NET "seg<7>"         LOC = "M13" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L61N,                           Sch name = DP
+NET "seg<0>"         LOC = "T17" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L51P_M1DQ12,                    Sch name = CA
+NET "seg<1>"         LOC = "T18" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L51N_M1DQ13,                    Sch name = CB
+NET "seg<2>"         LOC = "U17" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L52P_M1DQ14,                    Sch name = CC
+NET "seg<3>"         LOC = "U18" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L52N_M1DQ15,                    Sch name = CD
+NET "seg<4>"         LOC = "M14" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L53P,                           Sch name = CE
+NET "seg<5>"         LOC = "N14" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L53N_VREF,                      Sch name = CF
+NET "seg<6>"         LOC = "L14" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L61P,                           Sch name = CG
+NET "seg<7>"         LOC = "M13" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L61N,                           Sch name = DP
 
-#NET "an<0>"          LOC = "N16" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L50N_M1UDQSN,                   Sch name = AN0
-#NET "an<1>"          LOC = "N15" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L50P_M1UDQS,                    Sch name = AN1
-#NET "an<2>"          LOC = "P18" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L49N_M1DQ11,                    Sch name = AN2
-#NET "an<3>"          LOC = "P17" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L49P_M1DQ10,                    Sch name = AN3
+NET "an<0>"          LOC = "N16" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L50N_M1UDQSN,                   Sch name = AN0
+NET "an<1>"          LOC = "N15" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L50P_M1UDQS,                    Sch name = AN1
+NET "an<2>"          LOC = "P18" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L49N_M1DQ11,                    Sch name = AN2
+NET "an<3>"          LOC = "P17" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L49P_M1DQ10,                    Sch name = AN3
 
 
 ## Leds
