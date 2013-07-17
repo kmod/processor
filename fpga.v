@@ -22,6 +22,7 @@
 module fpga(
 		input wire input_clk,
 		input wire [7:0] sw,
+		input wire [4:0] btn,
 		output wire [7:0] led,
 		output wire [7:0] seg,
 		output wire [3:0] an
@@ -32,5 +33,10 @@ module fpga(
 
 	assign led = sw;
 	
-	sseg #(.N(16)) sseg(.clk(clk), .in({sw, sw}), .c(seg), .an(an));
+	reg [15:0] ctr;
+	always @(posedge clk) begin
+		if (btn[0]) ctr <= ctr + 1'b1;
+	end
+	
+	sseg #(.N(16)) sseg(.clk(clk), .in(ctr), .c(seg), .an(an));
 endmodule
