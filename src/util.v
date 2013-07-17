@@ -80,3 +80,23 @@ module sseg #(parameter N=18) (
 		endcase
 	end
 endmodule
+
+module debounce #(parameter N=100000) (
+		input wire clk,
+		input wire in,
+		output reg out
+	);
+	
+	reg prev;
+	reg [23:0] ctr;
+	always @(posedge clk) begin
+		if (in != prev) begin
+			prev <= in;
+			ctr <= 0;
+		end else if (ctr == N) begin
+			out <= in;
+		end else begin
+			ctr <= ctr + 1;
+		end
+	end
+endmodule
