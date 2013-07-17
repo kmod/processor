@@ -34,8 +34,12 @@ module fpga(
 	assign led = sw;
 	
 	reg [15:0] ctr;
+	reg [4:0] btn_prev;
 	always @(posedge clk) begin
-		if (btn[0]) ctr <= ctr + 1'b1;
+		if (btn[0] && !btn_prev[0]) ctr <= ctr + 1'b1;
+		else if (btn[2] && !btn_prev[2]) ctr <= 0;
+		
+		btn_prev <= btn;
 	end
 	
 	sseg #(.N(16)) sseg(.clk(clk), .in(ctr), .c(seg), .an(an));
