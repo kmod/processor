@@ -20,14 +20,17 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module fpga(
-		input wire clk,
+		input wire input_clk,
 		input wire [7:0] sw,
 		output wire [7:0] led,
 		output wire [7:0] seg,
 		output wire [3:0] an
 	);
 
+	wire clk; // 10MHz clock
+	dcm dcm(.CLK_IN(input_clk), .CLK_OUT(clk)); // 100MHz -> 10MHz DCM
+
 	assign led = sw;
 	
-	sseg sseg(.clk(clk), .in({sw, sw}), .c(seg), .an(an));
+	sseg #(.N(16)) sseg(.clk(clk), .in({sw, sw}), .c(seg), .an(an));
 endmodule

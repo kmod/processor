@@ -26,6 +26,17 @@ module sseg #(parameter N=18) (
 		output reg [7:0] c,
 		output reg [3:0] an
 	);
+	/**
+	A simple seven-segment display driver, designed for the display on the Nexys 3.
+	
+	N: the driver will iterate over all four digits every 2**N clock cycles
+	clk: the clock that is the source of timing for switching between digits
+	in: a 16-bit value; each of the 4-bit nibbles will be put onto the display, msb leftmost
+	c: an 8-bit output determining the segments to display.  active low.
+	an: a 4-bit output determining the characters to enable.  active low.
+	
+	With a 10MHz clock I've been using N=16, which gives a full cycle every 6ms
+	**/
 
 	reg [N-1:0] ctr; // counter that determines which digit to display
 	always @(posedge clk) begin

@@ -4,3 +4,8 @@
 !.gitignore
 !*.xise
 !src
+!ipcore_dir
+!ipcore_dir/*
+!ipcore_dir/*/*
+ipcore_dir/_xmsgs
+ipcore_dir/tmp
