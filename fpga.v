@@ -33,17 +33,17 @@ module fpga(
 
 	assign led = sw;
 	
-	wire [4:0] _btn_debounced;
-	// Use "pipelining" registers since we don't care about the extra clock cycle of latency for push buttons;
-	// this gives the input time to cross the fpga from the input pins
-	reg [4:0] btn_debounced;
+	// button synchronizer:
+	reg [4:0] btn_sync, btn_sync2;
+	always @(posedge clk) begin
+		{btn_sync, btn_sync2} <= {btn, btn_sync};
+	end
+	
+	wire [4:0] btn_debounced;
 	genvar idx;
 	generate
 		for (idx=0; idx<5; idx=idx+1) begin: debounce_btn
-			debounce btn_db(.clk(clk), .in(btn[idx]), .out(_btn_debounced[idx]));
-			always @(posedge clk) begin
-				btn_debounced[idx] = _btn_debounced[idx];
-			end
+			debounce btn_db(.clk(clk), .in(btn_sync2[idx]), .out(btn_debounced[idx]));
 		end
 	endgenerate
 	

@@ -89,14 +89,16 @@ module debounce #(parameter N=100000) (
 	
 	reg prev;
 	reg [23:0] ctr;
+	reg _o; // pipeline register for out
 	always @(posedge clk) begin
 		if (in != prev) begin
 			prev <= in;
 			ctr <= 0;
 		end else if (ctr == N) begin
-			out <= in;
+			_o <= in;
 		end else begin
 			ctr <= ctr + 1;
 		end
+		out <= _o;
 	end
 endmodule
