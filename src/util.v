@@ -81,24 +81,24 @@ module sseg #(parameter N=18) (
 	end
 endmodule
 
-module debounce #(parameter N=100000) (
+module debounce #(parameter B=16) (
 		input wire clk,
 		input wire in,
 		output reg out
 	);
 	
 	reg prev;
-	reg [23:0] ctr;
+	reg [B:0] ctr;
 	reg _o; // pipeline register for out
 	always @(posedge clk) begin
+		ctr <= ctr + 1'b1;
+		out <= _o;
+		if (ctr[B]) begin
+			_o <= in;
+		end
 		if (in != prev) begin
 			prev <= in;
 			ctr <= 0;
-		end else if (ctr == N) begin
-			_o <= in;
-		end else begin
-			ctr <= ctr + 1;
 		end
-		out <= _o;
 	end
 endmodule
