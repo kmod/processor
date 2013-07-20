@@ -51,17 +51,11 @@ module fpga(
 	
 	reg [15:0] ctr;
 	reg [4:0] btn_prev;
-	always @(posedge clk) begin
-		if (btn_debounced[0] && !btn_prev[0]) ctr <= ctr + 1'b1;
-		if (btn_debounced[2] && !btn_prev[2]) ctr <= 0;
-		
-		btn_prev <= btn_debounced;
-	end
 	
 	sseg #(.N(16)) sseg(.clk(clk), .in(ctr), .c(seg), .an(an));
 	
 	
-	wire [7:0] uart_tx_data;
+	reg [7:0] uart_tx_data = 8'd65;
 	assign uart_tx_data = 8'd65;
 	wire uart_tx_req, uart_tx_ready;
 	assign uart_tx_req = (btn_debounced[3] && !btn_prev[3]);
@@ -71,4 +65,24 @@ module fpga(
 	115,200: 87 cycles
 	*/
 	uart_tranceiver #(.CLK_CYCLES(87)) uart_tx(.clk(clk), .data(uart_tx_data), .req(uart_tx_req), .ready(uart_tx_ready), .uart_tx(RsTx));
+	
+	// Input synchronizer:
+	reg RsRx1=1, RsRx2=1;
+	always @(posedge clk) begin
+		{RsRx1, RsRx2} <= {RsRx, RsRx1};
+	end
+	wire [7:0] uart_rx_data;
+	wire uart_received;
+	uart_receiver #(.CLK_CYCLES(87)) uart_rx(.clk(clk), .data(uart_rx_data), .received(uart_received), .uart_rx(RsRx2));
+	
+	always @(posedge clk) begin
+		if (btn_debounced[0] && !btn_prev[0]) ctr <= ctr + 1'b1;
+		if (btn_debounced[2] && !btn_prev[2]) ctr <= 0;
+		
+		if (uart_received) begin
+			ctr <= {ctr[7:0], uart_rx_data};
+		end
+		
+		btn_prev <= btn_debounced;
+	end
 endmodule
