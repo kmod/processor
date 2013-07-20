@@ -1,5 +1,6 @@
 *
 !*.v
+!*.py
 !*.ucf
 !.gitignore
 !*.xise

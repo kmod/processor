@@ -25,7 +25,9 @@ module fpga(
 		input wire [4:0] btn,
 		output wire [7:0] led,
 		output wire [7:0] seg,
-		output wire [3:0] an
+		output wire [3:0] an,
+		output wire RsTx,
+		input wire RsRx
 	);
 
 	wire clk; // 10MHz clock
@@ -57,4 +59,16 @@ module fpga(
 	end
 	
 	sseg #(.N(16)) sseg(.clk(clk), .in(ctr), .c(seg), .an(an));
+	
+	
+	wire [7:0] uart_tx_data;
+	assign uart_tx_data = 8'd65;
+	wire uart_tx_req, uart_tx_ready;
+	assign uart_tx_req = (btn_debounced[3] && !btn_prev[3]);
+	/*
+	Baud rates:
+	@10MHz:
+	115,200: 87 cycles
+	*/
+	uart_tranceiver #(.CLK_CYCLES(87)) uart_tx(.clk(clk), .data(uart_tx_data), .req(uart_tx_req), .ready(uart_tx_ready), .uart_tx(RsTx));
 endmodule

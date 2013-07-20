@@ -247,8 +247,8 @@ NET "btn<4>"         LOC = "D9"  | IOSTANDARD = "LVCMOS33";   #Bank = 0, Pin nam
 
 
 ## Usb-RS232 interface
-#NET "RsRx"           LOC = "N17" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L48P_HDC_M1DQ8,                 Sch name = MCU-RX
-#NET "RsTx"           LOC = "N18" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L48N_M1DQ9,                     Sch name = MCU-TX
+NET "RsRx"           LOC = "N17" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L48P_HDC_M1DQ8,                 Sch name = MCU-RX
+NET "RsTx"           LOC = "N18" | IOSTANDARD = "LVCMOS33";   #Bank = 1, Pin name = IO_L48N_M1DQ9,                     Sch name = MCU-TX
 
 
 ## VHDCI Connector

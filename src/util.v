@@ -124,3 +124,42 @@ module debounce_unopt #(parameter N=100000) (
 		out <= _o;
 	end
 endmodule
+
+
+module uart_tranceiver #(parameter CLK_CYCLES=4167, CTR_WIDTH=16)
+		(input wire clk, input wire [7:0] data, input wire req, output wire ready, output wire uart_tx);
+		
+		reg [CTR_WIDTH-1:0] ctr;
+		
+		reg [4:0] bit_idx;
+		reg [9:0] line_data;
+		reg sending;
+		
+		initial begin
+			sending = 0;
+			ctr = 0;
+		end;
+		
+		assign uart_tx = sending ? line_data[bit_idx] : 1'b1;
+		
+		always @(posedge clk) begin
+			ctr <= ctr + 1;
+			
+			if (ctr == (CLK_CYCLES-1)) begin
+				ctr <= 0;
+				
+				if (bit_idx == 9) begin
+					sending <= 0;
+				end
+				
+				bit_idx <= bit_idx + 1;
+			end
+				
+			if (req && !sending) begin
+				line_data <= {1'b1, data, 1'b0};
+				bit_idx <= 0;
+				sending <= 1;
+				ctr <= 0;
+			end
+		end
+endmodule
