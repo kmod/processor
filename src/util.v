@@ -183,7 +183,7 @@ module uart_multibyte_transmitter #(parameter CLK_CYCLES=4167, CTR_WIDTH=16, MSG
 		uart_transmitter #(.CLK_CYCLES(CLK_CYCLES), .CTR_WIDTH(CTR_WIDTH)) uart_txr(.clk(clk), .data(cur_byte), .req(busy), .ready(tx_ready), .uart_tx(uart_tx));
 		
 		wire [MSG_LOG_WIDTH-1:0] next_byte_idx;
-		assign next_byte_idx = byte_idx + 1;
+		assign next_byte_idx = byte_idx + 1'b1;
 		
 		always @(posedge clk) begin
 			if (!busy && req) begin
@@ -228,6 +228,34 @@ module uart_receiver #(parameter CLK_CYCLES=4178, CTR_WIDTH=16)
 				ctr <= (CLK_CYCLES-1 + CLK_CYCLES / 2); // try to sample in the middle of the bit, to maximize clk rate flexibility.  wait an additional CLK_CYCLES to skip the rest of the start bit
 				bits_left <= 4'd8;
 				receiving <= 1;
+			end
+		end
+endmodule
+
+module uart_multibyte_receiver #(parameter CLK_CYCLES=4178, CTR_WIDTH=16, MSG_LOG_WIDTH=3)
+	(input wire clk, output reg [8*(2**MSG_LOG_WIDTH)-1:0] data, output reg valid, input wire ack, input wire uart_rx, output wire [7:0] led);
+		reg [MSG_LOG_WIDTH-1:0] byte_idx;
+		wire [MSG_LOG_WIDTH-1:0] next_byte_idx;
+		assign next_byte_idx = byte_idx + 1'b1;
+		
+		reg [8*(2**MSG_LOG_WIDTH)-1:0] buffer;
+		wire [8*(2**MSG_LOG_WIDTH)-1:0] next_buffer;
+		assign next_buffer = {recvd_byte, buffer[8*(2**MSG_LOG_WIDTH)-1:8]};
+		
+		wire [7:0] recvd_byte;
+		wire recvd_valid;
+		uart_receiver #(.CLK_CYCLES(CLK_CYCLES)) uart_rvr(.clk(clk), .data(recvd_byte), .received(recvd_valid), .uart_rx(uart_rx));
+				
+		always @(posedge clk) begin
+			if (ack) valid <= 1'b0;
+			
+			if (recvd_valid) begin
+				buffer <= next_buffer;
+				byte_idx <= next_byte_idx;
+				if (next_byte_idx == 0) begin
+					data <= next_buffer;
+					valid <= 1'b1;
+				end
 			end
 		end
 endmodule

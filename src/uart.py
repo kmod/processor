@@ -1,3 +1,6 @@
+import threading
+import time
+
 import serial # easy_install pyserial
 
 
@@ -17,14 +20,23 @@ def test(br):
     # if test(i):
         # print i
 
-ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=1)
+ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=4)
 print ser.portstr
 ser.write("hello")
 
+def read_thread():
+    while True:
+        c = ser.read(1)
+        print "R", repr(c)
+
+t = threading.Thread(target=read_thread)
+t.setDaemon(True)
+t.start()
+
 i = 0
 while True:
-    c = ser.read(1)
+    time.sleep(1)
+    print "W", repr(chr(i&0xff))
     ser.write(chr(i&0xff))
     i += 1
-    print repr(c)
-    ser.write(c)
+    # ser.write(c)

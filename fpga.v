@@ -33,7 +33,7 @@ module fpga(
 	wire clk; // 10MHz clock
 	dcm dcm(.CLK_IN(input_clk), .CLK_OUT(clk)); // 100MHz -> 10MHz DCM
 
-	assign led = sw;
+	//assign led = sw;
 	
 	// button synchronizer:
 	reg [4:0] btn_sync, btn_sync2;
@@ -55,32 +55,36 @@ module fpga(
 	sseg #(.N(16)) sseg(.clk(clk), .in(ctr), .c(seg), .an(an));
 	
 	
-	reg [127:0] uart_tx_data = 128'h2d2d2d2d2d646c726f77206f6c6c6568; // "hello world-----" with 'h' as the LSB
-	wire uart_tx_req, uart_tx_ready;
-	assign uart_tx_req = (btn_debounced[3] && !btn_prev[3]);
 	/*
 	Baud rates:
 	@10MHz:
 	115,200: 87 cycles
 	*/
-	//uart_transmitter #(.CLK_CYCLES(87)) uart_tx(.clk(clk), .data(uart_tx_data), .req(uart_tx_req), .ready(uart_tx_ready), .uart_tx(RsTx));
-	uart_multibyte_transmitter #(.CLK_CYCLES(87), .MSG_LOG_WIDTH(4)) uart_mbtx(.clk(clk), .data(uart_tx_data), .req(uart_tx_req), .uart_tx(RsTx));
+	
+	wire uart_tx_req, uart_tx_ready;
+	
+	wire [31:0] uart_rx_data;
+	wire uart_rx_valid;
+	assign uart_tx_req = uart_rx_valid;
+	uart_multibyte_transmitter #(.CLK_CYCLES(87), .MSG_LOG_WIDTH(2)) uart_mbtx(.clk(clk), .data(uart_rx_data), .req(uart_tx_req), .uart_tx(RsTx));
 	
 	// Input synchronizer:
 	reg RsRx1=1, RsRx2=1;
 	always @(posedge clk) begin
 		{RsRx1, RsRx2} <= {RsRx, RsRx1};
 	end
-	wire [7:0] uart_rx_data;
-	wire uart_received;
-	uart_receiver #(.CLK_CYCLES(87)) uart_rx(.clk(clk), .data(uart_rx_data), .received(uart_received), .uart_rx(RsRx2));
+	uart_multibyte_receiver #(.CLK_CYCLES(87), .MSG_LOG_WIDTH(2)) uart_mbrx(.clk(clk), .data(uart_rx_data), .valid(uart_rx_valid), .ack(1'b1), .uart_rx(RsRx2));
+	
+	
+	
+	
 	
 	always @(posedge clk) begin
 		if (btn_debounced[0] && !btn_prev[0]) ctr <= ctr + 1'b1;
 		if (btn_debounced[2] && !btn_prev[2]) ctr <= 0;
 		
-		if (uart_received) begin
-			ctr <= {ctr[7:0], uart_rx_data};
+		if (uart_rx_valid) begin
+			ctr <= uart_rx_data[15:0];
 		end
 		
 		btn_prev <= btn_debounced;
