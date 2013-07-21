@@ -126,7 +126,7 @@ module debounce_unopt #(parameter N=100000) (
 endmodule
 
 
-module uart_tranceiver #(parameter CLK_CYCLES=4167, CTR_WIDTH=16)
+module uart_transmitter #(parameter CLK_CYCLES=4167, CTR_WIDTH=16)
 		(input wire clk, input wire [7:0] data, input wire req, output wire ready, output wire uart_tx);
 		
 		reg [CTR_WIDTH-1:0] ctr;
@@ -155,10 +155,47 @@ module uart_tranceiver #(parameter CLK_CYCLES=4167, CTR_WIDTH=16)
 					bits_left <= bits_left - 1'b1;
 			end
 				
-			if (req) begin
+			if (req && ready) begin
 				line_data <= {1'b1, data, 1'b0};
 				ctr <= 0;
 				bits_left <= 4'd10;
+			end
+		end
+endmodule
+
+module uart_multibyte_transmitter #(parameter CLK_CYCLES=4167, CTR_WIDTH=16, MSG_LOG_WIDTH=3)
+		(input wire clk, input wire [8*(2**MSG_LOG_WIDTH)-1:0] data, input wire req, output wire uart_tx);
+		
+		reg [8*(2**MSG_LOG_WIDTH)-1:0] cur_data;
+		reg [MSG_LOG_WIDTH-1:0] byte_idx;
+		reg busy = 1'b0;
+		
+		wire [7:0] cur_byte;
+		genvar idx;
+		generate
+			for (idx=0; idx<8; idx=idx+1) begin: byte_sel
+				assign cur_byte[idx] = cur_data[8*byte_idx+idx];
+			end
+		endgenerate
+		//assign cur_byte = cur_data[8*byte_idx+7:8*byte_idx];
+		
+		wire tx_ready;
+		uart_transmitter #(.CLK_CYCLES(CLK_CYCLES), .CTR_WIDTH(CTR_WIDTH)) uart_txr(.clk(clk), .data(cur_byte), .req(busy), .ready(tx_ready), .uart_tx(uart_tx));
+		
+		wire [MSG_LOG_WIDTH-1:0] next_byte_idx;
+		assign next_byte_idx = byte_idx + 1;
+		
+		always @(posedge clk) begin
+			if (!busy && req) begin
+				busy <= 1;
+				cur_data <= data;
+				byte_idx <= 0;
+			end
+			else if (busy && tx_ready) begin
+				byte_idx <= next_byte_idx;
+				if (next_byte_idx == 0) begin
+					busy <= 0;
+				end
 			end
 		end
 endmodule

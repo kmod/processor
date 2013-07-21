@@ -55,8 +55,7 @@ module fpga(
 	sseg #(.N(16)) sseg(.clk(clk), .in(ctr), .c(seg), .an(an));
 	
 	
-	reg [7:0] uart_tx_data = 8'd65;
-	assign uart_tx_data = 8'd65;
+	reg [127:0] uart_tx_data = 128'h2d2d2d2d2d646c726f77206f6c6c6568; // "hello world-----" with 'h' as the LSB
 	wire uart_tx_req, uart_tx_ready;
 	assign uart_tx_req = (btn_debounced[3] && !btn_prev[3]);
 	/*
@@ -64,7 +63,8 @@ module fpga(
 	@10MHz:
 	115,200: 87 cycles
 	*/
-	uart_tranceiver #(.CLK_CYCLES(87)) uart_tx(.clk(clk), .data(uart_tx_data), .req(uart_tx_req), .ready(uart_tx_ready), .uart_tx(RsTx));
+	//uart_transmitter #(.CLK_CYCLES(87)) uart_tx(.clk(clk), .data(uart_tx_data), .req(uart_tx_req), .ready(uart_tx_ready), .uart_tx(RsTx));
+	uart_multibyte_transmitter #(.CLK_CYCLES(87), .MSG_LOG_WIDTH(4)) uart_mbtx(.clk(clk), .data(uart_tx_data), .req(uart_tx_req), .uart_tx(RsTx));
 	
 	// Input synchronizer:
 	reg RsRx1=1, RsRx2=1;
